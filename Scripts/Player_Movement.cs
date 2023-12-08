@@ -207,9 +207,9 @@ public class Player_Movement : MonoBehaviour
         
         if (jump && /*!heldJump &&*/ coyoteCount <= coyoteTime){
 
-            if(rb.velocity[1] <= jumpVelo){
-                rb.AddForce(jumpVelo * Vector3.up, ForceMode2D.Impulse);
-            }
+            //if(rb.velocity[1] < jumpVelo){
+            rb.AddForce(jumpVelo * Vector3.up, ForceMode2D.Impulse);
+            //}
             //rb.velocity = new Vector2(rb.velocity[0], jumpVelo);
             //rb.AddForce(jumpVelo * this.transform.up, ForceMode2D.Impulse);
         }
@@ -234,7 +234,7 @@ public class Player_Movement : MonoBehaviour
             grapple.enabled = true;
             BCol2D.sharedMaterial = bouncyMaterial;
             grapple.connectedAnchor = new Vector2(mousePos[0], mousePos[1]);
-            //transform.rotation = Vector2.Angle(transform.position, grappleEnd);
+
         }else{
             grappleTimeCount += Time.deltaTime;
             
@@ -243,13 +243,6 @@ public class Player_Movement : MonoBehaviour
 
             Vector3 offset = grappleEnd - transform.position;
             transform.rotation = Quaternion.LookRotation(Vector3.forward, offset) * Quaternion.Euler(0,0,90);
-
-            // Converts absolute velocity into velocity relative to grapple point.
-            // Still not what we want. Want to constrain player position to the edge of a circle
-            // whose radius is based on distance from the mouse to the player and whose
-            // origin is centered on the mouse on click.
-            //float angle = Vector2.Angle(transform.position, grappleEnd) / (360 / (2 * Mathf.PI));
-            //rb.velocity = new Vector2(Mathf.Cos(angle) * rb.velocity[0], Mathf.Sin(angle) * rb.velocity[1]);
 
             //Debug.Log("Angle; " + angle + "  Grapple End " + grappleEnd[0] + " " + grappleEnd[1]);
         }
@@ -262,8 +255,7 @@ public class Player_Movement : MonoBehaviour
                 }
             }else{ // The player is grappling.
 
-                // Get location of grapple end. Add to velocity based on tangent to circle.
-                //rb.velocity = new Vector2(transform.forward * motionSpeed);
+                // Add to velocity based on tangent to grapple circle.
                 rb.AddForce(transform.up * motionSpeed);
             }
         }
@@ -275,8 +267,7 @@ public class Player_Movement : MonoBehaviour
                 }
             }else{ // The player is grappling.
                 
-                // Get location of grapple end. Add to velocity based on tangent to circle.
-                //rb.velocity = new Vector2(transform.forward * motionSpeed);
+                // Add to velocity based on tangent to grapple circle.
                 rb.AddForce(-transform.up * motionSpeed);
             }
         }

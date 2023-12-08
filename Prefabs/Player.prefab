@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8193456877217248696}
   - component: {fileID: 8193456877217248703}
   - component: {fileID: 8193456877217248699}
+  - component: {fileID: 5075008620465087298}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -99,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886cce25a1ab21a44841d90e81e1e562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coyoteTime: 0
+  coyoteTime: 0.16666667
   canJump: 0
   jumpVelo: 5
   motionSpeed: 2
@@ -107,11 +108,13 @@ MonoBehaviour:
   grappleActivated: 1
   teleportActivated: 1
   canDash: 1
-  dashForce: 10
+  dashForce: 500
   grappleTime: 2
   grappleCooldown: 5
   grappleMaxRange: 5
-  grappleMaterial: {fileID: 0}
+  grappleRenderMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  bouncyMaterial: {fileID: 6200000, guid: 90eb3bc8ba754574c8b56f58ac7d269d, type: 2}
+  defaultMaterial: {fileID: 6200000, guid: 733b5c0bf32749341baf36ad250dbd30, type: 2}
   teleportCooldown: 10
 --- !u!61 &8193456877217248703
 BoxCollider2D:
@@ -122,7 +125,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 8193456877217248702}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 733b5c0bf32749341baf36ad250dbd30, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -160,3 +163,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!232 &5075008620465087298
+DistanceJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8193456877217248702}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 1
+  m_Distance: 1.0901835
+  m_MaxDistanceOnly: 0

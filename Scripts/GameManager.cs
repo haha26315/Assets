@@ -4,7 +4,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab; // Reference to the player prefab
-    public Vector3 startPosition; // The position where the player should respawn
+    public Vector2 startPosition; // The position where the player should respawn
 
     private GameObject currentPlayer; // Reference to the current player object
 
@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        
         // Make the camera follow the player
         Vector3 targetPosition = new Vector3(currentPlayer.transform.position.x, currentPlayer.transform.position.y, cam.transform.position.z);
         cam.transform.position = Vector3.SmoothDamp(cam.transform.position, targetPosition, ref velocity, followSpeed * Time.deltaTime);
@@ -81,7 +82,8 @@ public class GameManager : MonoBehaviour
         score = Mathf.Max(score, 0);
 
         // Destroy the player object
-        Destroy(currentPlayer);
+        //Destroy(currentPlayer);
+        currentPlayer.SetActive(false);
 
         // Start the Respawn coroutine
         StartCoroutine(Respawn());
@@ -95,10 +97,15 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         // Instantiate a new player object at the start position
-        currentPlayer = Instantiate(playerPrefab, startPosition, Quaternion.identity);
+
+        currentPlayer.SetActive(true);
+        playerRigidbody.position = startPosition;
+        playerRigidbody.rotation = 0;
+
+        //currentPlayer = Instantiate(playerPrefab, startPosition, Quaternion.identity);
 
         // Get the Rigidbody2D from the new player object
-        playerRigidbody = currentPlayer.GetComponent<Rigidbody2D>();
+        //playerRigidbody = currentPlayer.GetComponent<Rigidbody2D>();
     }
 
     public void CompleteLevel()
