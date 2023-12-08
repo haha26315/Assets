@@ -445,6 +445,7 @@ MonoBehaviour:
   grappleTime: 2
   grappleCooldown: 5
   grappleMaxRange: 5
+  grappleMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   teleportCooldown: 10
 --- !u!212 &1221967165
 SpriteRenderer:

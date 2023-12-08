@@ -38,7 +38,10 @@ public class Player_Movement : MonoBehaviour
     public float grappleMaxRange = 5;
 
     // Where the end of the grapple is. Useful for adding speed.
-    private Vector2 grappleEnd;
+    private Vector3 grappleEnd;
+    // Render the grapple.
+    private LineRenderer l;
+    public Material grappleMaterial;
     
     // How long until teleportation refreshes
     public float teleportCooldown = 10;
@@ -115,6 +118,14 @@ public class Player_Movement : MonoBehaviour
 
         // Make sure player can grapple when they spawn.
         grappleCooldownCount = grappleCooldown;
+
+        l = gameObject.AddComponent<LineRenderer>();
+        l.startWidth = 0.5f;
+        l.endWidth = 0.5f;
+        l.useWorldSpace = true;
+        l.startColor = Color.red;
+        l.endColor = Color.red;
+        l.material = grappleMaterial;
     }
 
     
@@ -133,14 +144,18 @@ public class Player_Movement : MonoBehaviour
         //bool shiftDown = Input.GetKeyDown(KeyCode.LeftShift);
         bool leftMouse = Input.GetMouseButton(0); // Controls grappling
         bool leftMouseDown = Input.GetMouseButtonDown(0);
+        bool leftMouseReleased = Input.GetMouseButtonUp(0);
         bool rightMouse = Input.GetMouseButtonDown(1); // Controls teleporting
 
         Vector3 mousePos = Input.mousePosition;
         // Convert absolute mouse coordinates into world mouse coordinates.
         mousePos.z = transform.position.z - Camera.main.transform.position.z;
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-        
-        Vector3 grappleEnd = new Vector3(0,0,0);
+
+        // Ensure our grapple is only visible when grappling
+        if(leftMouseReleased){
+            l.enabled = false;
+        }
 
         if (shift && canDash){
             
@@ -201,24 +216,34 @@ public class Player_Movement : MonoBehaviour
             
             grappleEnd = mousePos;
             grappleTimeCount = 0;
+            l.enabled = true;
             //transform.rotation = Vector2.Angle(transform.position, grappleEnd);
         }else{
             grappleTimeCount += Time.deltaTime;
             Vector3 offset = grappleEnd - transform.position;
             transform.rotation = Quaternion.LookRotation(Vector3.forward, offset) * Quaternion.Euler(0,0,90);
+            
+            Vector3[] linePoints = {transform.position, grappleEnd};
+            l.SetPositions(linePoints);
 
-            Debug.Log("Grappling");
-            //transform.rotation = Vector2.Angle(transform.position, grappleEnd);
+            // Converts absolute velocity into velocity relative to grapple point.
+            // Still not what we want. Want to constrain player position to the edge of a circle
+            // whose radius is based on distance from the mouse to the player and whose
+            // origin is centered on the mouse on click.
+            float angle = Vector2.Angle(transform.position, grappleEnd) / (360 / (2 * Mathf.PI));
+            rb.velocity = new Vector2(Mathf.Cos(angle) * rb.velocity[0], Mathf.Sin(angle) * rb.velocity[1]);
+
+            Debug.Log("Angle; " + angle + "  Grapple End " + grappleEnd[0] + " " + grappleEnd[1]);
         }
 
         if (left && !right){
             if (!isGrappling){ // The player is not grappling.
                 //rb.velocity = new Vector2(-motionSpeed, rb.velocity[1]);
-                if(rb.velocity[0] >= -motionSpeed){
+                if(rb.velocity[0] > -motionSpeed){
                     rb.AddForce(jumpVelo * Vector3.left, ForceMode2D.Impulse);
                 }
             }else{ // The player is grappling.
-            
+
                 // Get location of grapple end. Add to velocity based on tangent to circle.
                 //rb.velocity = new Vector2(transform.forward * motionSpeed);
                 rb.AddForce(transform.up * motionSpeed);
@@ -227,7 +252,7 @@ public class Player_Movement : MonoBehaviour
         if (!left && right){
             if (!isGrappling){ // The player is not grappling.
                 //rb.velocity = new Vector2(motionSpeed, rb.velocity[1]);
-                if(rb.velocity[0] <= motionSpeed){
+                if(rb.velocity[0] < motionSpeed){
                     rb.AddForce(jumpVelo * Vector3.right, ForceMode2D.Impulse);
                 }
             }else{ // The player is grappling.
