@@ -8,7 +8,7 @@ public class Player_Movement : MonoBehaviour
     private Rigidbody2D rb;
 
     // How many seconds after leaving the ground that the player can still jump. Reminder; By default, 60 frames are in a second.
-    public float coyoteTime = 5/60;
+    public float coyoteTime = 10/60;
     
     // Keeps track of whether the player can currently jump, based on when they last hit another object.
     public bool canJump = false;
@@ -133,9 +133,14 @@ public class Player_Movement : MonoBehaviour
         //bool shiftDown = Input.GetKeyDown(KeyCode.LeftShift);
         bool leftMouse = Input.GetMouseButton(0); // Controls grappling
         bool leftMouseDown = Input.GetMouseButtonDown(0);
-        bool rightMouse = Input.GetMouseButton(1); // Controls teleporting
-        bool rightMouseDown = Input.GetMouseButtonDown(1);
-        Vector3 mousePos = Input.mousePosition; 
+        bool rightMouse = Input.GetMouseButtonDown(1); // Controls teleporting
+
+        Vector3 mousePos = Input.mousePosition;
+        // Convert absolute mouse coordinates into world mouse coordinates.
+        mousePos.z = transform.position.z - Camera.main.transform.position.z;
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        
+        Vector3 grappleEnd = new Vector3(0,0,0);
 
         if (shift && canDash){
             
@@ -170,15 +175,13 @@ public class Player_Movement : MonoBehaviour
             }
         }
 
-        if(rightMouse && !rightMouseDown){
+        if(rightMouse){
 
-            mousePos.z = transform.position.z - Camera.main.transform.position.z ;
-            transform.position = Camera.main.ScreenToWorldPoint(mousePos);
+            // Teleport the player to the position of the mouse.
+            transform.position = mousePos;
 
             // Delete velocity on teleport
             rb.velocity = new Vector2(0, 0);
-            //Vector3 mouseEnd = new Vector3(mousePos[0], transform.position.z, mousePos[2]);
-            //transform.position = mouseEnd;
         }
         
         if (jump && /*!heldJump &&*/ coyoteCount <= coyoteTime){
@@ -193,6 +196,19 @@ public class Player_Movement : MonoBehaviour
         bool isGrappling = leftMouse && grappleCooldownCount >= grappleCooldown && grappleTimeCount <= grappleTime;
         if(!isGrappling){
             grappleCooldownCount += Time.deltaTime;
+            grappleTimeCount = 0;
+        }else if(leftMouseDown){
+            
+            grappleEnd = mousePos;
+            grappleTimeCount = 0;
+            //transform.rotation = Vector2.Angle(transform.position, grappleEnd);
+        }else{
+            grappleTimeCount += Time.deltaTime;
+            Vector3 offset = grappleEnd - transform.position;
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, offset) * Quaternion.Euler(0,0,90);
+
+            Debug.Log("Grappling");
+            //transform.rotation = Vector2.Angle(transform.position, grappleEnd);
         }
 
         if (left && !right){
@@ -203,23 +219,13 @@ public class Player_Movement : MonoBehaviour
                 }
             }else{ // The player is grappling.
 
-                // Make sure this is only updated the frame the player grapples.
-                if(leftMouseDown){
-                    grappleEnd = new Vector2(mousePos[0], mousePos[1]);
-                    grappleTimeCount = 0;
-                }else{
-                    grappleTimeCount += Time.deltaTime;
-                }
-
                 // Make the player rotate to face the point they're grappling.
                 //transform.rotation = Quaternion.LookRotation(grappleEnd);
-                transform.rotation = Quaternion.Euler(grappleEnd * (360 / (2 * Mathf.PI)));
-
-                Vector2.Angle(transform.position, grappleEnd);
+                //transform.rotation = Quaternion.Euler(grappleEnd * (360 / (2 * Mathf.PI)));
 
                 // Get location of grapple end. Add to velocity based on tangent to circle.
                 //rb.velocity = new Vector2(transform.forward * motionSpeed);
-                rb.AddForce(-transform.right * motionSpeed);
+                rb.AddForce(transform.up * motionSpeed);
             }
         }
         if (!left && right){
@@ -230,23 +236,16 @@ public class Player_Movement : MonoBehaviour
                 }
             }else{ // The player is grappling.
 
-                // Make sure this is only updated the frame the player grapples.
-                if(!leftMouseDown){
-                    grappleEnd = new Vector2(mousePos[1], mousePos[2]);
-                    grappleTimeCount = 0;
-                }else{
-                    grappleTimeCount += Time.deltaTime;
-                }
-
                 // Make the player rotate to face the point they're grappling.
                 //transform.rotation = Quaternion.LookRotation(grappleEnd);
-                transform.rotation = Quaternion.Euler(grappleEnd * (360 / (2 * Mathf.PI)));
+                //transform.rotation = Quaternion.Euler(grappleEnd * (360 / (2 * Mathf.PI)));
 
-                Vector2.Angle(transform.position, grappleEnd);
+                
+                //Vector2.Angle(transform.position, grappleEnd);
 
                 // Get location of grapple end. Add to velocity based on tangent to circle.
                 //rb.velocity = new Vector2(transform.forward * motionSpeed);
-                rb.AddForce(transform.right * motionSpeed);
+                rb.AddForce(-transform.up * motionSpeed);
             }
         }
 
