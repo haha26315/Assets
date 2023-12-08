@@ -218,11 +218,7 @@ public class Player_Movement : MonoBehaviour
                     rb.AddForce(jumpVelo * Vector3.left, ForceMode2D.Impulse);
                 }
             }else{ // The player is grappling.
-
-                // Make the player rotate to face the point they're grappling.
-                //transform.rotation = Quaternion.LookRotation(grappleEnd);
-                //transform.rotation = Quaternion.Euler(grappleEnd * (360 / (2 * Mathf.PI)));
-
+            
                 // Get location of grapple end. Add to velocity based on tangent to circle.
                 //rb.velocity = new Vector2(transform.forward * motionSpeed);
                 rb.AddForce(transform.up * motionSpeed);
@@ -235,14 +231,7 @@ public class Player_Movement : MonoBehaviour
                     rb.AddForce(jumpVelo * Vector3.right, ForceMode2D.Impulse);
                 }
             }else{ // The player is grappling.
-
-                // Make the player rotate to face the point they're grappling.
-                //transform.rotation = Quaternion.LookRotation(grappleEnd);
-                //transform.rotation = Quaternion.Euler(grappleEnd * (360 / (2 * Mathf.PI)));
-
                 
-                //Vector2.Angle(transform.position, grappleEnd);
-
                 // Get location of grapple end. Add to velocity based on tangent to circle.
                 //rb.velocity = new Vector2(transform.forward * motionSpeed);
                 rb.AddForce(-transform.up * motionSpeed);
