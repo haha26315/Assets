@@ -388,6 +388,7 @@ GameObject:
   - component: {fileID: 1221967164}
   - component: {fileID: 1221967163}
   - component: {fileID: 1221967167}
+  - component: {fileID: 1221967168}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -404,7 +405,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1221967162}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 733b5c0bf32749341baf36ad250dbd30, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -445,7 +446,9 @@ MonoBehaviour:
   grappleTime: 2
   grappleCooldown: 5
   grappleMaxRange: 5
-  grappleMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  grappleRenderMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  bouncyMaterial: {fileID: 6200000, guid: 90eb3bc8ba754574c8b56f58ac7d269d, type: 2}
+  defaultMaterial: {fileID: 6200000, guid: 733b5c0bf32749341baf36ad250dbd30, type: 2}
   teleportCooldown: 10
 --- !u!212 &1221967165
 SpriteRenderer:
@@ -535,3 +538,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!232 &1221967168
+DistanceJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1221967162}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 1
+  m_Distance: 1.0901835
+  m_MaxDistanceOnly: 0

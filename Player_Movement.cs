@@ -39,9 +39,15 @@ public class Player_Movement : MonoBehaviour
 
     // Where the end of the grapple is. Useful for adding speed.
     private Vector3 grappleEnd;
+    private DistanceJoint2D grapple;
     // Render the grapple.
     private LineRenderer l;
-    public Material grappleMaterial;
+    public Material grappleRenderMaterial;
+
+    // So that the player rebounds when grappling
+    private BoxCollider2D BCol2D;
+    public PhysicsMaterial2D bouncyMaterial;
+    public PhysicsMaterial2D defaultMaterial;
     
     // How long until teleportation refreshes
     public float teleportCooldown = 10;
@@ -67,7 +73,7 @@ public class Player_Movement : MonoBehaviour
         canJump = true;
 
         canDash = true;
-
+        
         // Code from my last unity project that may be useful as a reference later.
 
         // Checks what type of object it's hit before acting.
@@ -116,6 +122,11 @@ public class Player_Movement : MonoBehaviour
         // Get and store physics component.
         rb = GetComponent<Rigidbody2D>();
 
+        grapple = GetComponent<DistanceJoint2D>();
+        grapple.enabled = false;
+        BCol2D = GetComponent<BoxCollider2D>();
+        BCol2D.sharedMaterial = defaultMaterial;
+
         // Make sure player can grapple when they spawn.
         grappleCooldownCount = grappleCooldown;
 
@@ -125,7 +136,7 @@ public class Player_Movement : MonoBehaviour
         l.useWorldSpace = true;
         l.startColor = Color.red;
         l.endColor = Color.red;
-        l.material = grappleMaterial;
+        l.material = grappleRenderMaterial;
     }
 
     
@@ -151,11 +162,6 @@ public class Player_Movement : MonoBehaviour
         // Convert absolute mouse coordinates into world mouse coordinates.
         mousePos.z = transform.position.z - Camera.main.transform.position.z;
         mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-
-        // Ensure our grapple is only visible when grappling
-        if(leftMouseReleased){
-            l.enabled = false;
-        }
 
         if (shift && canDash){
             
@@ -208,6 +214,13 @@ public class Player_Movement : MonoBehaviour
             //rb.AddForce(jumpVelo * this.transform.up, ForceMode2D.Impulse);
         }
 
+        // Ensure our grapple is only visible when grappling
+        if(leftMouseReleased){
+            l.enabled = false;
+            grapple.enabled = false;
+            BCol2D.sharedMaterial = defaultMaterial;
+        }
+
         bool isGrappling = leftMouse && grappleCooldownCount >= grappleCooldown && grappleTimeCount <= grappleTime;
         if(!isGrappling){
             grappleCooldownCount += Time.deltaTime;
@@ -217,23 +230,28 @@ public class Player_Movement : MonoBehaviour
             grappleEnd = mousePos;
             grappleTimeCount = 0;
             l.enabled = true;
+
+            grapple.enabled = true;
+            BCol2D.sharedMaterial = bouncyMaterial;
+            grapple.connectedAnchor = new Vector2(mousePos[0], mousePos[1]);
             //transform.rotation = Vector2.Angle(transform.position, grappleEnd);
         }else{
             grappleTimeCount += Time.deltaTime;
-            Vector3 offset = grappleEnd - transform.position;
-            transform.rotation = Quaternion.LookRotation(Vector3.forward, offset) * Quaternion.Euler(0,0,90);
             
             Vector3[] linePoints = {transform.position, grappleEnd};
             l.SetPositions(linePoints);
+
+            Vector3 offset = grappleEnd - transform.position;
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, offset) * Quaternion.Euler(0,0,90);
 
             // Converts absolute velocity into velocity relative to grapple point.
             // Still not what we want. Want to constrain player position to the edge of a circle
             // whose radius is based on distance from the mouse to the player and whose
             // origin is centered on the mouse on click.
-            float angle = Vector2.Angle(transform.position, grappleEnd) / (360 / (2 * Mathf.PI));
-            rb.velocity = new Vector2(Mathf.Cos(angle) * rb.velocity[0], Mathf.Sin(angle) * rb.velocity[1]);
+            //float angle = Vector2.Angle(transform.position, grappleEnd) / (360 / (2 * Mathf.PI));
+            //rb.velocity = new Vector2(Mathf.Cos(angle) * rb.velocity[0], Mathf.Sin(angle) * rb.velocity[1]);
 
-            Debug.Log("Angle; " + angle + "  Grapple End " + grappleEnd[0] + " " + grappleEnd[1]);
+            //Debug.Log("Angle; " + angle + "  Grapple End " + grappleEnd[0] + " " + grappleEnd[1]);
         }
 
         if (left && !right){
