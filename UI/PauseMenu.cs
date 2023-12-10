@@ -31,6 +31,16 @@ public class PauseMenu : MonoBehaviour
         {
             isPaused = !isPaused;
             Time.timeScale = isPaused ? 0 : 1;
+
+            // Disable the controls of the player while paused, re-enable them when unpaused
+            // Made this capable of gathering collections in case there is a level
+            // with multiple controllable player objects.
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            foreach (GameObject player in players){
+
+                // If we're paused, controls are disabled.
+                player.GetComponent<Player_Movement>().controlsDisabled = isPaused;
+            }
         }
     }
 

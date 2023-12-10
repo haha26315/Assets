@@ -7,6 +7,9 @@ public class Player_Movement : MonoBehaviour
     // Private physics components.
     private Rigidbody2D rb;
 
+    // For the pause menu
+    public bool controlsDisabled = false;
+
     // How many seconds after leaving the ground that the player can still jump. Reminder; By default, 60 frames are in a second.
     public float coyoteTime = 10/60;
     
@@ -36,6 +39,8 @@ public class Player_Movement : MonoBehaviour
 
     // How far away the grapple can reach
     public float grappleMaxRange = 5;
+
+    private bool pauseReleaseGrapple = false;
 
     // Where the end of the grapple is. Useful for adding speed.
     private Vector3 grappleEnd;
@@ -144,6 +149,18 @@ public class Player_Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Make sure we catch if the grapple button is released or pressed even if pausing to prevent bugs.
+        bool leftMouseReleased = Input.GetMouseButtonUp(0);
+        bool leftMouseDown = Input.GetMouseButtonDown(0);
+
+        pauseReleaseGrapple = (leftMouseReleased && controlsDisabled) || (pauseReleaseGrapple && !leftMouseDown);
+        
+        // If controls are disabled, completely skip this block.
+        // May have to change if controls are ever disabled for a reason other than pausing.
+        if(controlsDisabled){
+            return;
+        }
+
         bool jump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
         bool heldJump = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W);
 
@@ -152,10 +169,9 @@ public class Player_Movement : MonoBehaviour
         bool down = Input.GetKey(KeyCode.S);
         
         bool shift = Input.GetKeyDown(KeyCode.LeftShift); // Controls dashing
-        //bool shiftDown = Input.GetKeyDown(KeyCode.LeftShift);
-        bool leftMouse = Input.GetMouseButton(0); // Controls grappling
-        bool leftMouseDown = Input.GetMouseButtonDown(0);
-        bool leftMouseReleased = Input.GetMouseButtonUp(0);
+
+        // Controls grappling
+        bool leftMouse = Input.GetMouseButton(0); 
         bool rightMouse = Input.GetMouseButtonDown(1); // Controls teleporting
 
         Vector3 mousePos = Input.mousePosition;
@@ -215,7 +231,7 @@ public class Player_Movement : MonoBehaviour
         }
 
         // Ensure our grapple is only visible when grappling
-        if(leftMouseReleased){
+        if(leftMouseReleased || pauseReleaseGrapple){
             l.enabled = false;
             grapple.enabled = false;
             BCol2D.sharedMaterial = defaultMaterial;
@@ -275,5 +291,7 @@ public class Player_Movement : MonoBehaviour
         if (touching.Count == 0) {
             coyoteCount += Time.deltaTime;
         }
+
+        pauseReleaseGrapple = false;
     }
 }
