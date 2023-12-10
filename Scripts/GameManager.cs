@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     private float currentMinZoom;
     public float maxZoom = 15f;
     public float speedToMaxZoom = 30f;
+    public bool idleZoom = true;
+
     private Vector3 velocity = Vector3.zero;
     private Camera cam;
     private Rigidbody2D playerRigidbody;
@@ -46,43 +48,49 @@ public class GameManager : MonoBehaviour
         Vector3 targetPosition = new Vector3(currentPlayer.transform.position.x, currentPlayer.transform.position.y, cam.transform.position.z);
         cam.transform.position = Vector3.SmoothDamp(cam.transform.position, targetPosition, ref velocity, followSpeed * Time.deltaTime);
 
-        // Calculate the player's speed
-        float speed = playerRigidbody.velocity.magnitude;
-
-        // If the player is not moving, increment the timer
-        if (speed <= 0.1f)
-        {
-            idleTimer += Time.deltaTime;
-
-            // If the timer exceeds the delay, start zooming out
-            if (idleTimer >= idleZoomDelay)
-            {
-                float newZoom = Mathf.Lerp(cam.orthographicSize, maxZoom, Time.deltaTime * zoomSpeed);
-                cam.orthographicSize = newZoom;
-            }
-        }
-        else
-        {
-            // If the player is moving, reset the timer and start zooming in
-            idleTimer = 0;
-
-            // Sets the new zoom to be an interpolation based on zoom speed and also the player's speed.
-            // As the player gets faster up to our max zoom speed value, the camera zooms out.
-            float newZoom = Mathf.Lerp(cam.orthographicSize, Mathf.Lerp(currentMinZoom, maxZoom, Mathf.Min(speed / speedToMaxZoom, speedToMaxZoom)), Time.deltaTime * zoomSpeed);
-
-            //float newZoom = Mathf.Lerp(cam.orthographicSize, minZoom, (Time.deltaTime * zoomSpeed) / speed);
-            cam.orthographicSize = newZoom;
-        }
-
         // Get the scroll wheel input
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-
-        Debug.Log(scrollInput);
 
         // Adjust the camera's zoom level based on the scroll wheel input
         currentMinZoom -= scrollInput * zoomSpeed * manualZoomFactor;
         currentMinZoom = Mathf.Clamp(currentMinZoom, minZoom, maxZoom);
-        cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, currentMinZoom, maxZoom);
+
+        // Calculate the player's speed
+        float speed = playerRigidbody.velocity.magnitude;
+
+        // Checks for if zooming the camera out when idle is enabled.
+        if(idleZoom){
+
+            // If the player is not moving and zooming while idle is enabled, increment the timer
+            if (speed <= 0.1f && idleZoom)
+            {
+                idleTimer += Time.deltaTime;
+
+                // If the timer exceeds the delay, start zooming out
+                if (idleTimer >= idleZoomDelay)
+                {
+                    float newZoom = Mathf.Lerp(cam.orthographicSize, maxZoom, Time.deltaTime * zoomSpeed);
+                    cam.orthographicSize = newZoom;
+                }
+            }
+            else
+            {
+                // If the player is moving, reset the timer and start zooming in
+                idleTimer = 0;
+
+                // Sets the new zoom to be an interpolation based on zoom speed and also the player's speed.
+                // As the player gets faster up to our max zoom speed value, the camera zooms out.
+                float newZoom = Mathf.Lerp(cam.orthographicSize, Mathf.Lerp(currentMinZoom, maxZoom, Mathf.Min(speed / speedToMaxZoom, speedToMaxZoom)), Time.deltaTime * zoomSpeed);
+
+                //float newZoom = Mathf.Lerp(cam.orthographicSize, minZoom, (Time.deltaTime * zoomSpeed) / speed);
+                cam.orthographicSize = newZoom;
+            }
+        }else{
+            // We're probably editing a level, so zooming a level is only based upon scrolling
+            // No smoothing to allow for easier, more precise selection of objects
+            cam.orthographicSize = currentMinZoom;
+        }
+
     }
 
     public void PlayerDied()

@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 8571741798686361885}
   m_Layer: 0
   m_Name: GameManger
-  m_TagString: Untagged
-  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_TagString: GameController
+  m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -62,10 +62,12 @@ MonoBehaviour:
   playerPrefab: {fileID: 8193456877217248702, guid: 31f217cf4002e8c4ab066008ea8f36af, type: 3}
   startPosition: {x: 0, y: 0}
   zoomSpeed: 1
+  manualZoomFactor: 5
   followSpeed: 10
   minZoom: 5
   maxZoom: 15
   speedToMaxZoom: 30
+  idleZoom: 1
   score: 1000
   scoreIncrease: 500
   scoreDecrease: 100
