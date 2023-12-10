@@ -10,8 +10,10 @@ public class GameManager : MonoBehaviour
 
     // For the camera
     public float zoomSpeed = 1f;
+    public float manualZoomFactor = 5f;
     public float followSpeed = 10f;
     public float minZoom = 5f;
+    private float currentMinZoom;
     public float maxZoom = 15f;
     public float speedToMaxZoom = 30f;
     private Vector3 velocity = Vector3.zero;
@@ -30,6 +32,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        currentMinZoom = minZoom;
 
         // Instantiate the player at the start of the game
         currentPlayer = Instantiate(playerPrefab, startPosition, Quaternion.identity);
@@ -65,7 +68,7 @@ public class GameManager : MonoBehaviour
 
             // Sets the new zoom to be an interpolation based on zoom speed and also the player's speed.
             // As the player gets faster up to our max zoom speed value, the camera zooms out.
-            float newZoom = Mathf.Lerp(cam.orthographicSize, Mathf.Lerp(minZoom, maxZoom, Mathf.Min(speed / speedToMaxZoom, speedToMaxZoom)), Time.deltaTime * zoomSpeed);
+            float newZoom = Mathf.Lerp(cam.orthographicSize, Mathf.Lerp(currentMinZoom, maxZoom, Mathf.Min(speed / speedToMaxZoom, speedToMaxZoom)), Time.deltaTime * zoomSpeed);
 
             //float newZoom = Mathf.Lerp(cam.orthographicSize, minZoom, (Time.deltaTime * zoomSpeed) / speed);
             cam.orthographicSize = newZoom;
@@ -74,9 +77,12 @@ public class GameManager : MonoBehaviour
         // Get the scroll wheel input
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
 
+        Debug.Log(scrollInput);
+
         // Adjust the camera's zoom level based on the scroll wheel input
-        cam.orthographicSize -= scrollInput * zoomSpeed;
-        cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
+        currentMinZoom -= scrollInput * zoomSpeed * manualZoomFactor;
+        currentMinZoom = Mathf.Clamp(currentMinZoom, minZoom, maxZoom);
+        cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, currentMinZoom, maxZoom);
     }
 
     public void PlayerDied()
