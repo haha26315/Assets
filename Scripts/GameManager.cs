@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public float followSpeed = 10f;
     public float minZoom = 5f;
     public float maxZoom = 15f;
+    public float speedToMaxZoom = 30f;
     private Vector3 velocity = Vector3.zero;
     private Camera cam;
     private Rigidbody2D playerRigidbody;
@@ -61,7 +62,12 @@ public class GameManager : MonoBehaviour
         {
             // If the player is moving, reset the timer and start zooming in
             idleTimer = 0;
-            float newZoom = Mathf.Lerp(cam.orthographicSize, minZoom, Time.deltaTime * zoomSpeed);
+
+            // Sets the new zoom to be an interpolation based on zoom speed and also the player's speed.
+            // As the player gets faster up to our max zoom speed value, the camera zooms out.
+            float newZoom = Mathf.Lerp(cam.orthographicSize, Mathf.Lerp(minZoom, maxZoom, Mathf.Min(speed / speedToMaxZoom, speedToMaxZoom)), Time.deltaTime * zoomSpeed);
+
+            //float newZoom = Mathf.Lerp(cam.orthographicSize, minZoom, (Time.deltaTime * zoomSpeed) / speed);
             cam.orthographicSize = newZoom;
         }
 
