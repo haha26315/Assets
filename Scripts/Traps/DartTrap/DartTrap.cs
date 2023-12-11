@@ -1,10 +1,17 @@
+using System.Collections;
 using UnityEngine;
 
 public class DartTrap : MonoBehaviour
 {
     public Projectile projectileType;
-    public float fireInterval = 2f; // Interval between firing, adjustable in the inspector
+    public float fireInterval = 5f; // Interval between firing, adjustable in the inspector
     private float timer = 0f; // Timer to keep track of time since last projectile was fired
+    private SpriteRenderer spriteRenderer; // Reference to the sprite renderer
+
+    private void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>(); // Get the sprite renderer
+    }
 
     // Update is called once per frame
     void Update()
@@ -25,8 +32,51 @@ public class DartTrap : MonoBehaviour
             finally
             {
                 timer = 0f; // Reset timer
+                StartCoroutine(ChangeColorOverTime()); // Start the color change coroutine
             }
         }
+        else
+        {
+            // Change the color from green to yellow to red as the timer increases
+            float fraction = timer / fireInterval;
+            if (fraction < 0.5f)
+            {
+                spriteRenderer.color = Color.Lerp(Color.green, Color.yellow, fraction * 2f);
+            }
+            else
+            {
+                spriteRenderer.color = Color.Lerp(Color.yellow, Color.red, (fraction - 0.5f) * 2f);
+            }
+        }
+    }
+
+    private IEnumerator ChangeColorOverTime()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fireInterval)
+        {
+            // Calculate the fraction of the total time that has passed
+            float fraction = elapsedTime / fireInterval;
+
+            // Change the color from green to yellow to red
+            if (fraction < 0.5f)
+            {
+                // Transition from green to yellow
+                spriteRenderer.color = Color.Lerp(Color.green, Color.yellow, fraction * 2f);
+            }
+            else
+            {
+                // Transition from yellow to red
+                spriteRenderer.color = Color.Lerp(Color.yellow, Color.red, (fraction - 0.5f) * 2f);
+            }
+
+            elapsedTime += Time.deltaTime; // Update the elapsed time
+            yield return null; // Wait until the next frame
+        }
+
+        // Set the color to red when the trap is about to fire
+        spriteRenderer.color = Color.red;
     }
 
     public void FireProjectile()
@@ -68,19 +118,6 @@ public class DartTrap : MonoBehaviour
                     // Add arrow-like behavior to the projectile
                     rb.gravityScale = 1;
                     break;
-            }
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check if the collided object is a dart
-        if (collision.gameObject.CompareTag("Dart"))
-        {
-            // Destroy the dart when it collides with the player
-            if (collision.otherCollider.gameObject.CompareTag("Player"))
-            {
-                Destroy(collision.gameObject);
             }
         }
     }

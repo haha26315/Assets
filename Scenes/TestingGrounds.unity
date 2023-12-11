@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileType: {fileID: 11400000, guid: edb396cb058c45c4ca272cfaf040ca73, type: 2}
-  fireInterval: 2
+  fireInterval: 5
 --- !u!212 &810037572
 SpriteRenderer:
   m_ObjectHideFlags: 0
