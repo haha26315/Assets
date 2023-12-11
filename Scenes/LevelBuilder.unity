@@ -179,6 +179,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8571741798686361885, guid: da802655f6269334d82d2586b72c783b, type: 3}
+      propertyPath: maxZoom
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8571741798686361885, guid: da802655f6269334d82d2586b72c783b, type: 3}
+      propertyPath: minZoom
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8571741798686361885, guid: da802655f6269334d82d2586b72c783b, type: 3}
       propertyPath: idleZoom
       value: 0
       objectReference: {fileID: 0}

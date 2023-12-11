@@ -164,7 +164,7 @@ public class PauseMenu : MonoBehaviour
     }
 
     // Helper method to create a Texture2D with a single color
-    private Texture2D MakeTex(int width, int height, Color col)
+    public Texture2D MakeTex(int width, int height, Color col)
     {
         Color[] pix = new Color[width * height];
         for (int i = 0; i < pix.Length; i++)

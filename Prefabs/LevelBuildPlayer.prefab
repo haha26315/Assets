@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3373212041279470617}
   - component: {fileID: 8008176977235465022}
+  - component: {fileID: -982084922589177763}
   - component: {fileID: -307145615015601077}
   m_Layer: 0
   m_Name: LevelBuildPlayer
@@ -54,6 +55,23 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-982084922589177763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9109200042830888827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5871da716fe51b74b9eb654efa459e48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManagerPrefab: {fileID: 8571741798686361880, guid: da802655f6269334d82d2586b72c783b, type: 3}
+  levelSpawnerPrefab: {fileID: 2372461410972164095, guid: 1c5490c8790b06d418bf6a2aab752f25, type: 3}
+  distFromCenter: 100
+  buttonWidth: 150
+  buttonHeight: 30
 --- !u!114 &-307145615015601077
 MonoBehaviour:
   m_ObjectHideFlags: 0
