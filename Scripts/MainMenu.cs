@@ -4,13 +4,15 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    public GameObject mainMenuPanel;
     public GameObject levelsPanel;
     public GameObject keybindsPanel;
 
     public void PlayGame()
     {
-        // Show the levels panel
+        // Show the levels panel and hide the main menu panel
         levelsPanel.SetActive(true);
+        //mainMenuPanel.SetActive(false);
     }
 
     public void QuitGame()
@@ -21,7 +23,8 @@ public class MainMenu : MonoBehaviour
 
     public void OpenKeybinds()
     {
-        // Show the keybinds panel
+        // Show the keybinds panel and hide the main menu panel
         keybindsPanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
     }
 }
