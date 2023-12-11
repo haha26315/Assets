@@ -91,40 +91,51 @@ public class PauseMenu : MonoBehaviour
                 {
                     isChangingLevel = false;
                 }
-
-                /*
-                // Display "Save Progress" button
-                if (GUI.Button(new Rect(centerX - 100, centerY + 90 + 30 * sceneNames.Length, 200, 30), "Save Progress", buttonStyle))
-                {
-                    SaveProgress();
-                }
-
-                // Display "Load Progress" button
-                if (GUI.Button(new Rect(centerX - 100, centerY + 120 + 30 * sceneNames.Length, 200, 30), "Load Progress", buttonStyle))
-                {
-                    LoadProgress();
-                }
-                */
             }
             if (!isChangingLevel && !isShowingKeybinds)
             {
+                // Display "Keybinds" button
+                if (GUI.Button(new Rect(centerX - 100, centerY + 30 * sceneNames.Length, 200, 30), "Keybinds", buttonStyle))
+                {
+                    isShowingKeybinds = true;
+                }
+
                 // Display "Change Level" button
-                if (GUI.Button(new Rect(centerX - 100, centerY + 30 * sceneNames.Length, 200, 30), "Change Level", buttonStyle))
+                if (GUI.Button(new Rect(centerX - 100, centerY + 60 + 30 * sceneNames.Length, 200, 30), "Change Level", buttonStyle))
                 {
                     isChangingLevel = true;
                 }
 
-                // Display "Keybinds" button
-                if (GUI.Button(new Rect(centerX - 100, centerY + 150 + 30 * sceneNames.Length, 200, 30), "Keybinds", buttonStyle))
+                // Display "Main Menu" button
+                if (GUI.Button(new Rect(centerX - 100, centerY + 90 + 30 * sceneNames.Length, 200, 30), "Main Menu", buttonStyle))
                 {
-                    isShowingKeybinds = true;
+                    Time.timeScale = 1;
+                    SceneManager.LoadScene("MainMenu");
                 }
             }
 
             if (isShowingKeybinds)
             {
+                // Array of keybinds
+                string[] keybinds = new string[10]
+                {
+                    "Escape: Pause/Unpause",
+                    "Keybind 2",
+                    "Keybind 3",
+                    "Keybind 4",
+                    "Keybind 5",
+                    "Keybind 6",
+                    "Keybind 7",
+                    "Keybind 8",
+                    "Keybind 9",
+                    "Keybind 10"
+                };
+
                 // Display list of keybinds
-                GUI.Label(new Rect(centerX - 100, centerY - 150, 200, 30), "Escape: Pause/Unpause", textStyle);
+                for (int i = 0; i < keybinds.Length; i++)
+                {
+                    GUI.Label(new Rect(centerX - 100, centerY - 100 + 30 * i, 200, 30), keybinds[i], textStyle);
+                }
 
                 // Display "Back" button
                 if (GUI.Button(new Rect(centerX - 100, centerY + 180 + 30 * sceneNames.Length, 200, 30), "Back", buttonStyle))
@@ -132,34 +143,6 @@ public class PauseMenu : MonoBehaviour
                     isShowingKeybinds = false;
                 }
             }
-            /*
-            else
-            {
-                // Display "Change Level" button
-                if (GUI.Button(new Rect(centerX - 100, centerY + 30 * sceneNames.Length, 200, 30), "Change Level", buttonStyle))
-                {
-                    isChangingLevel = true;
-                }
-                // Display "Keybinds" button
-                if (GUI.Button(new Rect(centerX - 100, centerY + 150 + 30 * sceneNames.Length, 200, 30), "Keybinds", buttonStyle))
-                {
-                    isShowingKeybinds = true;
-                }
-
-                if (isShowingKeybinds)
-                {
-                    // Display list of keybinds
-                    GUI.Label(new Rect(centerX - 100, centerY - 150, 200, 30), "Escape: Pause/Unpause", textStyle);
-
-                    // Display "Back" button
-                    if (GUI.Button(new Rect(centerX - 100, centerY + 180 + 30 * sceneNames.Length, 200, 30), "Back", buttonStyle))
-                    {
-                        isShowingKeybinds = false;
-                    }
-                }
-                
-            }
-            */
         }
     }
 
@@ -184,26 +167,4 @@ public class PauseMenu : MonoBehaviour
             SceneManager.LoadScene(selectedSceneIndex);
         }
     }
-
-    /* Save and load progress
-    private void SaveProgress()
-    {
-        // Save the current scene index
-        PlayerPrefs.SetInt("SavedSceneIndex", SceneManager.GetActiveScene().buildIndex);
-        PlayerPrefs.Save();
-    }
-
-    private void LoadProgress()
-    {
-        // Check if a saved scene index exists
-        if (PlayerPrefs.HasKey("SavedSceneIndex"))
-        {
-            // Load the saved scene
-            SceneManager.LoadScene(PlayerPrefs.GetInt("SavedSceneIndex"));
-
-            // Unpause the game
-            Time.timeScale = 1;
-        }
-    }
-    */
 }
