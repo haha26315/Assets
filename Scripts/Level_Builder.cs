@@ -84,7 +84,7 @@ public class Level_Builder : MonoBehaviour
     }
 
 
-    private IEnumerator Update(){
+    private void Update(){
         
         // Player is activating our levelbuilder.
         if (Input.GetKeyDown(KeyCode.E))
