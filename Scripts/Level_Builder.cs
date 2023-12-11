@@ -64,9 +64,9 @@ public class Level_Builder : MonoBehaviour
             foreach(FileInfo file in files){
                 
                 // Make sure we only give the first part of the name and not file extensions.
-                //split = file.Name.Split('.');
-                //Placeable_Names[i].Add(split[0]);
-                Placeable_Names[i].Add(file.Name);
+                split = file.Name.Split('.');
+                Placeable_Names[i].Add(split[0]);
+                //Placeable_Names[i].Add(file.Name);
             }
             i++;
         }
