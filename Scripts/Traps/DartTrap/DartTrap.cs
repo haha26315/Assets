@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DartTrap : MonoBehaviour
 {
-    public Projectile projectileType;
+    public GameObject projectilePrefab; // The projectile prefab
     public float fireInterval = 5f; // Interval between firing, adjustable in the inspector
     private float timer = 0f; // Timer to keep track of time since last projectile was fired
     private SpriteRenderer spriteRenderer; // Reference to the sprite renderer
@@ -17,7 +17,7 @@ public class DartTrap : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime; // Increment timer by the time since last frame
-        Debug.Log("Timer: " + timer); // Log the value of timer
+        //Debug.Log("Timer: " + timer); // Log the value of timer
 
         if (timer >= fireInterval) // If fireInterval seconds have passed since last projectile was fired
         {
@@ -93,7 +93,7 @@ public class DartTrap : MonoBehaviour
             float distance = Vector2.Distance(transform.position, player.transform.position);
 
             // Instantiate the projectile in the direction of the player
-            GameObject projectile = Instantiate(projectileType.projectilePrefab, transform.position + (Vector3)(direction * 0.5f), Quaternion.identity);
+            GameObject projectile = Instantiate(projectilePrefab, transform.position + (Vector3)(direction * 0.5f), Quaternion.identity);
             Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
             Collider2D col = projectile.GetComponent<Collider2D>();
 
@@ -107,18 +107,6 @@ public class DartTrap : MonoBehaviour
 
             // Destroy the dart after 10 seconds
             Destroy(projectile, 10f);
-
-            switch (projectileType.behavior)
-            {
-                case Projectile.ProjectileBehavior.Bouncy:
-                    // Add bouncy behavior to the projectile
-                    //col.sharedMaterial = bouncyMaterial;
-                    break;
-                case Projectile.ProjectileBehavior.ArrowLike:
-                    // Add arrow-like behavior to the projectile
-                    rb.gravityScale = 1;
-                    break;
-            }
         }
     }
 }
