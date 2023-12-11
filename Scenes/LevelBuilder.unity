@@ -293,6 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a02c89906eb3d468257657d26e21a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainMenuPanel: {fileID: 0}
   levelsPanel: {fileID: 0}
   keybindsPanel: {fileID: 0}
 --- !u!1001 &2105340949

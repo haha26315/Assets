@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using System.IO;
 
 public class Level_Builder : MonoBehaviour
 {
@@ -17,7 +16,7 @@ public class Level_Builder : MonoBehaviour
     //private GameObject[] gameObjs;
     private string[] SubFolders;
     private List<string> Object_Categories;
-    private List<string[]> Placeables;
+    private List<List<string>> Placeables;
     private List<List<string>> Placeable_Names;
 
     // Sentinel value of -1.
@@ -35,47 +34,46 @@ public class Level_Builder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         // Initializing all of our lists.
         SubFolders = AssetDatabase.GetSubFolders("Assets/Prefabs");
 
         Object_Categories = new List<string>();
         Placeable_Names = new List<List<string>>();
-        Placeables = new List<string[]>();
+        Placeables = new List<List<string>>();
 
-        
-        // Gets the last bit of the filename. Ex; Assets/Prefabs/Objects = Objects. 
-        // These become the names of each category of Placeable objects.
-        int i = 0;
-        foreach(string folder in SubFolders){
+        // Adds to our list of Placeable object each found asset within the folders we parsed.
+        for(int i = 0; i < SubFolders.Length; i++){
+            string folder = SubFolders[i];
+            
+            // Gets the last bit of the filename. Ex; Assets/Prefabs/Objects = Objects. 
+            // These become the names of each category of Placeable objects.
             string[] split = folder.Split('/');
             Object_Categories.Add(split[split.Length-1]);
 
-            
-            DirectoryInfo d = new DirectoryInfo(folder);
-            FileInfo[] files = d.GetFiles("*.prefab");
+            // Get the GUIDs of assets at our current folder
+            string[] Assets = AssetDatabase.FindAssets("t:prefab", new string[] {folder});
 
-            // I is category
-            // Back button
+            // Make sure we have the next dimension of lists properly set up beforehand
+            Placeables.Add(new List<string>());
             Placeable_Names.Add(new List<string>());
+
+            // Add the backbutton for our radial submenu in each category for navigation.
             Placeable_Names[i].Add("Back");
 
-            // Add the name of every Placeable item.
-            foreach(FileInfo file in files){
-                
-                // Make sure we only give the first part of the name and not file extensions.
-                split = file.Name.Split('.');
-                Placeable_Names[i].Add(split[0]);
-                //Placeable_Names[i].Add(file.Name);
-            }
-            i++;
-        }
+            foreach(string Asset in Assets){
 
-        // Adds to our list of Placeable object each found asset within the folders we parsed.
-        for(i = 0; i < SubFolders.Length-1; i++){
-            string folder = SubFolders[i];
-            string[] Asset = AssetDatabase.FindAssets("t:prefab", new string[] {folder});
-            Placeables.Add(Asset);
+                // Gets and adds the file path of the asset to our list of placable assets.
+                string AssetPath = AssetDatabase.GUIDToAssetPath(Asset);
+                Placeables[i].Add(AssetPath);
+
+                // Make sure we don't include the rest of the file path or the file type what we display to player.
+                // Reuse split variable because it's convenient and the previous info isn't needed past this point.
+                split = AssetPath.Split('.');
+                split = split[0].Split('/');
+
+                // Add to our list of names of items that can be placed
+                Placeable_Names[i].Add(split[split.Length-1]);
+            }
         }
 
         menuHelper = GameObject.FindGameObjectWithTag("GameController").GetComponent<PauseMenu>();
@@ -133,7 +131,7 @@ public class Level_Builder : MonoBehaviour
             if(currentCategory == -1){
                 radialMenuNum = Object_Categories.Count;
             }else{
-                // Debug.Log("Current Category:  " + currentCategory);
+                //Debug.Log("Current Category:  " + currentCategory);
                 radialMenuNum = Placeable_Names[currentCategory].Count;
             }
 
