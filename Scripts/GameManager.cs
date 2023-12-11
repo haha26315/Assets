@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -43,6 +44,18 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        // Get the name of the current scene
+        string levelName = SceneManager.GetActiveScene().name;
+
+        // Get the high score for the current level
+        int highScore = PlayerPrefs.GetInt(levelName + "HighScore", 0);
+
+        // Check if the score has increased
+        if (score > highScore)
+        {
+            // Update the high score
+            PlayerPrefs.SetInt(levelName + "HighScore", score);
+        }
         
         // Make the camera follow the player
         Vector3 targetPosition = new Vector3(currentPlayer.transform.position.x, currentPlayer.transform.position.y, cam.transform.position.z);

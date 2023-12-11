@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using TMPro;
 
 [System.Serializable]
 public class Level
@@ -16,7 +17,6 @@ public class LevelsPanel : MonoBehaviour
 {
     public List<Level> levels;
     public Transform levelButtonsParent;
-    public Image levelImage;
     public Button loadLevelButton;
 
     private string selectedLevel;
@@ -29,6 +29,9 @@ public class LevelsPanel : MonoBehaviour
 
     // Duration of the color transition in seconds
     public float transitionDuration = 0.2f;
+
+    // Reference to a UI Text element
+    public TextMeshProUGUI highScoreText; 
 
 
     void Start()
@@ -156,10 +159,15 @@ public class LevelsPanel : MonoBehaviour
 
         // Update the level image
         Sprite levelSprite = levels.Find(level => level.sceneName == levelName).image;
-        levelImage.sprite = levelSprite;
 
         // Enable the load level button
         loadLevelButton.interactable = true;
+
+        // Get the high score for the selected level
+        int highScore = PlayerPrefs.GetInt(levelName + "HighScore", 0);
+
+        // Display the high score
+        highScoreText.text = "High Score: " + highScore;
     }
 
     void LoadLevel()
