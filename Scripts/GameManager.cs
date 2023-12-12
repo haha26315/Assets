@@ -69,7 +69,10 @@ public class GameManager : MonoBehaviour
         currentMinZoom = Mathf.Clamp(currentMinZoom, minZoom, maxZoom);
 
         // Calculate the player's speed
-        float speed = playerRigidbody.velocity.magnitude;
+        float speed = 0;
+        if(playerRigidbody != null){
+            speed = playerRigidbody.velocity.magnitude;
+        }
 
         // Checks for if zooming the camera out when idle is enabled.
         if(idleZoom){

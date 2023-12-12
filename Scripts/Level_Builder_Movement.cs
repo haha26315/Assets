@@ -9,15 +9,11 @@ public class Level_Builder_Movement : MonoBehaviour
     public float maxSpeed;
     public float timeToMaxSpeed;
     private float timeAccelerating;
-    
-    // Private physics components.
-    private Rigidbody2D rb;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Get and store physics component.
-        rb = GetComponent<Rigidbody2D>();
+
     }
 
     // Update is called once per frame
@@ -28,8 +24,16 @@ public class Level_Builder_Movement : MonoBehaviour
         bool left = Input.GetKey(KeyCode.A);
         bool right = Input.GetKey(KeyCode.D);
         
+        float motionAmount;
         // Allows the player to gradually accelerate when holding a movement button.
-        float motionAmount = Mathf.Lerp(minSpeed * Time.deltaTime, maxSpeed * Time.deltaTime, timeAccelerating / timeToMaxSpeed);
+        //Debug.Log("Firing!!! " + Time.deltaTime);
+        //if(Time.deltaTime != 0){
+        motionAmount = Mathf.Lerp(minSpeed * Time.deltaTime, maxSpeed * Time.deltaTime, timeAccelerating / timeToMaxSpeed);
+        //}else{
+        //    Debug.Log("Firing!!!");
+        //    motionAmount = Mathf.Lerp(minSpeed, maxSpeed, timeAccelerating / timeToMaxSpeed);
+        //    timeAccelerating += (1/60);
+        //}
 
         if(up || down || left || right){
             timeAccelerating += Time.deltaTime;
@@ -38,16 +42,16 @@ public class Level_Builder_Movement : MonoBehaviour
         }
 
         if(up){
-            rb.position = new Vector2(rb.position[0], rb.position[1] + motionAmount);
+            transform.Translate(0, motionAmount, 0);
         }
         if(down){
-            rb.position = new Vector2(rb.position[0], rb.position[1] - motionAmount);
+            transform.Translate(0, -motionAmount, 0);
         }
         if(left){
-            rb.position = new Vector2(rb.position[0] - motionAmount, rb.position[1]);
+            transform.Translate(-motionAmount, 0, 0);
         }
         if(right){
-            rb.position = new Vector2(rb.position[0] + motionAmount, rb.position[1]);
+            transform.Translate(motionAmount, 0, 0);
         }
     }
 }

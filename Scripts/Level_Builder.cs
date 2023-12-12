@@ -28,6 +28,11 @@ public class Level_Builder : GUI_Cam_Helpers
     // Level builder menu toggle
     private bool toggle = false;
 
+    private bool timeStopped = false;
+    public float timeScrollFactor = 10;
+
+    public float motionAmount = 0.1f;
+
     // Variables for radial menus.
     private int radialNum;
 
@@ -89,7 +94,7 @@ public class Level_Builder : GUI_Cam_Helpers
         {
             toggle = !toggle;
             //currentCategory = -1;
-            //Time.timeScale = isPaused ? 0 : 1;
+            //Time.timeScale = timeStopped ? 0 : 1;
 
             // Disable the controls of the player while paused, re-enable them when unpaused
             // Made this capable of gathering collections in case there is a level
@@ -99,9 +104,42 @@ public class Level_Builder : GUI_Cam_Helpers
             foreach (GameObject player in players){
 
                 // If we're paused, controls are disabled.
-                player.GetComponent<Player_Movement>().controlsDisabled = isPaused;
+                player.GetComponent<Player_Movement>().controlsDisabled = timeStopped;
             }
             */
+        }
+
+        bool middleClick = Input.GetMouseButtonDown(2);
+        if(middleClick){
+            timeStopped = !timeStopped;
+            Time.timeScale = timeStopped ? 0 : 1;
+
+            // Disable the controls of the player while paused, re-enable them when unpaused
+            // Made this capable of gathering collections in case there is a level
+            // with multiple controllable player objects.
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            foreach (GameObject player in players){
+
+                // If we're paused, controls are disabled. No way to disable controls on the level builder which is good!
+                Player_Movement movementScript = player.GetComponent<Player_Movement>();
+                if(movementScript != null){
+                    movementScript.controlsDisabled = timeStopped;
+                }
+            }
+        }
+
+        // Time is stopped.
+        if(timeStopped){
+
+            // Get the scroll wheel input and apply it to the timescale.
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+            // Advances us one frame of gametime if timeScrollFactor is 10 (and we're scrolling closer)
+            if(scrollInput > 0){
+                Time.timeScale = scrollInput;
+            }else{
+                Time.timeScale = 0;
+            }
         }
 
         // Player has (possibly) selected an gameobject to modify.
@@ -112,9 +150,13 @@ public class Level_Builder : GUI_Cam_Helpers
                 Vector2 cubeRay = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 RaycastHit2D cubeHit = Physics2D.Raycast(cubeRay, Vector2.zero);
 
-                if (cubeHit)
-                {
+                if (cubeHit){
                     Debug.Log("We hit " + cubeHit.collider.name);
+
+                    currentSelectedObj = cubeHit.collider.gameObject;
+
+                    // For getting objects built out of other objects like spike balls.
+                    //Component[] components = gameObject.GetComponentsInChildren<Component>(true);
                 }
             }
         }
@@ -138,12 +180,29 @@ public class Level_Builder : GUI_Cam_Helpers
             if(currentSelectedObj.name == "Level Block (Clone)"){
                 
             }else{  // Our object can be moved normally in the editor.
-                
+
+                if(up){
+                    currentSelectedObj.transform.Translate(0, motionAmount, 0);
+                }
+                if(down){
+                    currentSelectedObj.transform.Translate(0, -motionAmount, 0);
+                }
+                if(left){
+                    currentSelectedObj.transform.Translate(-motionAmount, 0, 0);
+                }
+                if(right){
+                    currentSelectedObj.transform.Translate(motionAmount, 0, 0);
+                }
             }
 
             // Global permutations like deletion
-            if (delete){
+            if(delete){
                 GameObject.Destroy(currentSelectedObj);
+            }
+
+            // Deselect our object
+            if(enter){
+                currentSelectedObj = null;
             }
         }
 
