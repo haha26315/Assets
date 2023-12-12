@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class Level_Builder : MonoBehaviour
+public class Level_Builder : GUI_Cam_Helpers
 {
     public GameObject gameManagerPrefab;
     public GameObject levelSpawnerPrefab;
@@ -23,7 +23,7 @@ public class Level_Builder : MonoBehaviour
     private int currentCategory;
     private int currentPlaceable;
 
-    private PauseMenu menuHelper;
+    private GameObject currentSelectedObj;
 
     // Level builder menu toggle
     private bool toggle = false;
@@ -35,7 +35,7 @@ public class Level_Builder : MonoBehaviour
     void Start()
     {
         // Initializing all of our lists.
-        SubFolders = AssetDatabase.GetSubFolders("Assets/Prefabs");
+        SubFolders = AssetDatabase.GetSubFolders("Assets/Resources/Prefabs");
 
         Object_Categories = new List<string>();
         Placeable_Names = new List<List<string>>();
@@ -64,6 +64,7 @@ public class Level_Builder : MonoBehaviour
 
                 // Gets and adds the file path of the asset to our list of placable assets.
                 string AssetPath = AssetDatabase.GUIDToAssetPath(Asset);
+                AssetPath = AssetPath.Split("Assets/Resources/")[1];
                 Placeables[i].Add(AssetPath);
 
                 // Make sure we don't include the rest of the file path or the file type what we display to player.
@@ -76,9 +77,8 @@ public class Level_Builder : MonoBehaviour
             }
         }
 
-        menuHelper = GameObject.FindGameObjectWithTag("GameController").GetComponent<PauseMenu>();
-
         currentCategory = -1;
+        currentPlaceable = -1;
     }
 
 
@@ -88,7 +88,7 @@ public class Level_Builder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             toggle = !toggle;
-            currentCategory = -1;
+            //currentCategory = -1;
             //Time.timeScale = isPaused ? 0 : 1;
 
             // Disable the controls of the player while paused, re-enable them when unpaused
@@ -104,17 +104,69 @@ public class Level_Builder : MonoBehaviour
             */
         }
 
-        /*
-        if(currentPlaceable != -1){
+        bool leftClick = Input.GetMouseButtonDown(0);
+
+        // We have a selected object! Check for key inputs and apply our selected permutations to them.
+        if(currentSelectedObj is not null){
             
+            // Simple movement of the object
+            bool up = Input.GetKeyDown(KeyCode.UpArrow);
+            bool down = Input.GetKeyDown(KeyCode.DownArrow);
+            bool left = Input.GetKeyDown(KeyCode.LeftArrow);
+            bool right = Input.GetKeyDown(KeyCode.RightArrow);
+
+            // Deselection of our current object
+            bool enter = Input.GetKeyDown(KeyCode.KeypadEnter);
+
+            // Self evident deletion of our object
+            bool delete = Input.GetKeyDown(KeyCode.Delete);
+
+            // The object needs special permutations applied to work, as with our polar coordinate blocks
+            if(currentSelectedObj.name == "Level Block (Clone)"){
+                
+            }else{  // Our object can be moved normally in the editor.
+                
+            }
+
+            // Global permutations like deletion
+            if (delete){
+                GameObject.Destroy(currentSelectedObj);
+            }
+        }
+
+        if(currentCategory != -1 && currentPlaceable != -1){
+
+            bool rightClick = Input.GetMouseButtonDown(1);
+            
+            /*
             var Asset = AssetDatabase.LoadObjectAsync(Placeables[currentPlaceable]);
             while(!Asset.isDone){
                 yield return null;
             }
+            */
 
-            GameObject currentSelectedObj = Instantiate(Asset.LoadedObject as GameObject, Input.mousePosition, Quaternion.identity);
+            if(rightClick){
+
+                //Debug.Log("Current Category; " + currentCategory + "   Current Placeable;  " + currentPlaceable);
+                
+                string[] split = Placeables[currentCategory][currentPlaceable].Split('.');
+
+                string filepath = split[0];
+                //split = split[0].Split('/');
+
+                GameObject Asset = Resources.Load<GameObject>(filepath) as GameObject;
+
+                //Debug.Log("Asset; " + Asset + "   Path  " + filepath);
+
+                Vector3 mousePos = Input.mousePosition;
+                mousePos.z = transform.position.z - Camera.main.transform.position.z;
+                mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+
+                currentSelectedObj = Instantiate(Asset, mousePos, Quaternion.identity);
+            }
+            
         }
-        */
+        
 
     }
 
@@ -137,7 +189,7 @@ public class Level_Builder : MonoBehaviour
 
             // Create a GUIStyle with a semi-transparent dark background
             GUIStyle backgroundStyle = new GUIStyle(GUI.skin.box);
-            backgroundStyle.normal.background = menuHelper.MakeTex(2, 2, new Color(0.2f, 0.2f, 0.2f, 0.8f));
+            backgroundStyle.normal.background = MakeTex(2, 2, new Color(0.2f, 0.2f, 0.2f, 0.8f));
 
             // Create a GUIStyle for the text with white lettering
             GUIStyle textStyle = new GUIStyle(GUI.skin.label);
@@ -147,8 +199,8 @@ public class Level_Builder : MonoBehaviour
             // Create a GUIStyle for the button with white lettering and a custom background
             GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.normal.textColor = Color.white;
-            buttonStyle.normal.background = menuHelper.MakeTex(2, 2, new Color(0.2f, 0.2f, 0.2f, 0.8f));
-            buttonStyle.hover.background = menuHelper.MakeTex(2, 2, new Color(0.3f, 0.3f, 0.3f, 0.8f));
+            buttonStyle.normal.background = MakeTex(2, 2, new Color(0.2f, 0.2f, 0.2f, 0.8f));
+            buttonStyle.hover.background = MakeTex(2, 2, new Color(0.3f, 0.3f, 0.3f, 0.8f));
 
 
             for(int i = 0; i < radialMenuNum; i++){
@@ -172,13 +224,14 @@ public class Level_Builder : MonoBehaviour
 
                     // We've selected an object.
                     if(GUI.Button(new Rect(centerX + xCoord, centerY + yCoord, buttonWidth, buttonHeight), Placeable_Names[currentCategory][i], buttonStyle)){
-                        currentPlaceable = i;
 
                         // We've hit the back button
                         if(i == 0){
                             currentCategory = -1;
+                            currentPlaceable = -1;
                             radialMenuNum = Object_Categories.Count;
                         }else{ // We've hit another button
+                            currentPlaceable = i - 1;
                             toggle = false;
                         }
                     }

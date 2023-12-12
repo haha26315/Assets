@@ -15,12 +15,38 @@ public class Level_Motion : MonoBehaviour
     {
         StartTime = Time.time;
 
+        if (startTheta == 0){
+            
+            // Ensures this block is pointing at the center before we use its transform for calculations if it's not already rotated.
+            //if(transform.rotation == Quaternion.identity){
+            //    transform.LookAt(Vector3.zero);
+            //}
+
+            Vector2 measureAngleTo = new Vector2(0, 1);
+            startTheta = (Vector2.SignedAngle(transform.position, measureAngleTo) / 360f) * (2f * Mathf.PI);
+
+            //Debug.Log("Theta  " + startTheta + "  ActualAngle  "  + Vector2.SignedAngle(transform.position, measureAngleTo));
+            Debug.Log("Position  " + transform.position);
+        }
+
         // If halfRadius hasn't been initialized, initialize it to the distance to the center.
         if (halfRadius == 0){
-            halfRadius = Mathf.Sqrt(Mathf.Pow(transform.position[0],2) + Mathf.Pow(transform.position[1],2));
-        }
-        if (startTheta == 0){
-            startTheta = Vector2.Angle(transform.up, -transform.position) / (360 / (4 * Mathf.PI));
+            
+            // Meant to work backwards from the influence of our function to then find the proper radius when it's
+            // At its lowest point. Doesn't work properly right now at certain positions and I can't for the life of me understand why.
+            // Maybe you'll have more success.
+            float distanceFromCenter = Mathf.Sqrt(Mathf.Pow(transform.position[0],2) + Mathf.Pow(transform.position[1],2));
+
+            float r = Mathf.Abs(Mathf.Cos(2 * startTheta) * (distanceFromCenter / 2));
+
+            float x = r * Mathf.Sin(startTheta);
+            float y = r * Mathf.Cos(startTheta);
+
+            //Debug.Log("R " + r + "  X " + x + "  Y " + y);
+
+            //halfRadius = Mathf.Sqrt(Mathf.Pow(transform.position[0] - x,2) + Mathf.Pow(transform.position[1] - y,2));
+            halfRadius = distanceFromCenter - Mathf.Sqrt(Mathf.Pow(x,2) + Mathf.Pow(y,2));
+            //Debug.Log("Dist from center " + distanceFromCenter + "  Half Radius  " + halfRadius);
         }
     }
 
