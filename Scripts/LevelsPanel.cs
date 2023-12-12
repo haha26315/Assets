@@ -31,7 +31,8 @@ public class LevelsPanel : MonoBehaviour
     public float transitionDuration = 0.2f;
 
     // Reference to a UI Text element
-    public TextMeshProUGUI highScoreText; 
+    public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI levelNameText; 
 
 
     void Start()
@@ -168,6 +169,9 @@ public class LevelsPanel : MonoBehaviour
 
         // Display the high score
         highScoreText.text = "High Score: " + highScore;
+
+        // Display the level name
+        levelNameText.text = "Level Name: " + levelName;
     }
 
     void LoadLevel()
