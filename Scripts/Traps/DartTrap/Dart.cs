@@ -43,7 +43,7 @@ public class Dart : MonoBehaviour
             if (collision.gameObject.CompareTag("Player"))
             {
                 // Destroy the dart
-                Destroy(gameObject);
+                //Destroy(gameObject);
 
                 // Get the GameManager component and run the PlayerDied function
                 GameManager gameManager = GameObject.FindObjectOfType<GameManager>();
