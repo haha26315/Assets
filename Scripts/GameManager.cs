@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
     }
 
     // Can add if score is 0, restart the level.
-    public void PlayerDied()
+    public void PlayerDied(GameObject deadPlayer)
     {
         // Decrease the score when the player dies
         score -= scoreDecrease;
@@ -117,12 +117,12 @@ public class GameManager : MonoBehaviour
 
         // Create a new ParticleSystem
         GameObject particleSystemObject = new GameObject("DeathParticles");
-        particleSystemObject.transform.position = currentPlayer.transform.position;
+        particleSystemObject.transform.position = deadPlayer.transform.position;
         ParticleSystem deathParticles = particleSystemObject.AddComponent<ParticleSystem>();
 
         // Configure the ParticleSystem
         var main = deathParticles.main;
-        main.startColor = currentPlayer.GetComponent<SpriteRenderer>().color;
+        main.startColor = deadPlayer.GetComponent<SpriteRenderer>().color;
         main.startSize = 0.2f;
         main.startLifetime = 1.0f;
         main.startSpeed = 5.0f;
@@ -144,10 +144,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StopEmissionAfterSeconds(deathParticles, 0.3f));
 
         // Destroy the player object
-        currentPlayer.SetActive(false);
+        deadPlayer.SetActive(false);
 
         // Start the Respawn coroutine
-        StartCoroutine(Respawn());
+        StartCoroutine(Respawn(deadPlayer));
     }
 
     private IEnumerator StopEmissionAfterSeconds(ParticleSystem particleSystem, float seconds)
@@ -157,16 +157,17 @@ public class GameManager : MonoBehaviour
         emission.enabled = false;
     }
 
-    private IEnumerator Respawn()
+    private IEnumerator Respawn(GameObject deadPlayer)
     {
         // Wait for 3 seconds
         yield return new WaitForSeconds(3f);
 
         // Instantiate a new player object at the start position
 
-        currentPlayer.SetActive(true);
-        playerRigidbody.position = startPosition;
-        playerRigidbody.rotation = 0;
+        deadPlayer.SetActive(true);
+        Rigidbody2D deadPlayerRB = deadPlayer.GetComponent<Rigidbody2D>();
+        deadPlayerRB.position = startPosition;
+        deadPlayerRB.rotation = 0;
 
         //currentPlayer = Instantiate(playerPrefab, startPosition, Quaternion.identity);
 

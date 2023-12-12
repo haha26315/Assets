@@ -104,10 +104,23 @@ public class Level_Builder : GUI_Cam_Helpers
             */
         }
 
+        // Player has (possibly) selected an gameobject to modify.
         bool leftClick = Input.GetMouseButtonDown(0);
+        if(leftClick){
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector2 cubeRay = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D cubeHit = Physics2D.Raycast(cubeRay, Vector2.zero);
+
+                if (cubeHit)
+                {
+                    Debug.Log("We hit " + cubeHit.collider.name);
+                }
+            }
+        }
 
         // We have a selected object! Check for key inputs and apply our selected permutations to them.
-        if(currentSelectedObj is not null){
+        if(currentSelectedObj != null){
             
             // Simple movement of the object
             bool up = Input.GetKeyDown(KeyCode.UpArrow);

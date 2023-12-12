@@ -49,7 +49,7 @@ public class Dart : MonoBehaviour
                 GameManager gameManager = GameObject.FindObjectOfType<GameManager>();
                 if (gameManager != null)
                 {
-                    gameManager.PlayerDied();
+                    gameManager.PlayerDied(collision.gameObject);
                 }
             }
         }

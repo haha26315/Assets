@@ -61,7 +61,7 @@ public class MineTrap : MonoBehaviour
             GameManager gameManager = GameObject.FindObjectOfType<GameManager>();
             if (gameManager != null)
             {
-                gameManager.PlayerDied();
+                gameManager.PlayerDied(other.gameObject);
             }
 
             // Instantiate the particle system at the mine's location
