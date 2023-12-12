@@ -119,16 +119,16 @@ public class PauseMenu : MonoBehaviour
                 // Array of keybinds
                 string[] keybinds = new string[10]
                 {
-                    "Escape: Pause/Unpause",
-                    "Keybind 2",
-                    "Keybind 3",
-                    "Keybind 4",
-                    "Keybind 5",
-                    "Keybind 6",
-                    "Keybind 7",
-                    "Keybind 8",
-                    "Keybind 9",
-                    "Keybind 10"
+                    "Pause/Unpause: Escape",
+                    "Movement: W,A,S,D",
+                    "Jump: Space Or W",
+                    "Grapple: Left Mouse Button",
+                    "Teleport: Right Mouse Button",
+                    "Dash: Left-Shift",
+                    "",
+                    "",
+                    "",
+                    ""
                 };
 
                 // Display list of keybinds
