@@ -106,6 +106,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // Can add if score is 0, restart the level.
     public void PlayerDied()
     {
         // Decrease the score when the player dies
@@ -114,14 +115,46 @@ public class GameManager : MonoBehaviour
         // Ensure the score doesn't go below zero
         score = Mathf.Max(score, 0);
 
+        // Create a new ParticleSystem
+        GameObject particleSystemObject = new GameObject("DeathParticles");
+        particleSystemObject.transform.position = currentPlayer.transform.position;
+        ParticleSystem deathParticles = particleSystemObject.AddComponent<ParticleSystem>();
+
+        // Configure the ParticleSystem
+        var main = deathParticles.main;
+        main.startColor = currentPlayer.GetComponent<SpriteRenderer>().color;
+        main.startSize = 0.2f;
+        main.startLifetime = 1.0f;
+        main.startSpeed = 5.0f;
+
+        var emission = deathParticles.emission;
+        emission.rateOverTime = 100;
+
+        var shape = deathParticles.shape;
+        shape.shapeType = ParticleSystemShapeType.Sphere;
+
+        // Create a new Material using the Sprites-Default shader
+        Material particleMaterial = new Material(Shader.Find("Sprites/Default"));
+        particleSystemObject.GetComponent<ParticleSystemRenderer>().material = particleMaterial;
+
+        // Play the ParticleSystem
+        deathParticles.Play();
+
+        // Stop the ParticleSystem's emission after 1 second
+        StartCoroutine(StopEmissionAfterSeconds(deathParticles, 0.3f));
+
         // Destroy the player object
-        //Destroy(currentPlayer);
         currentPlayer.SetActive(false);
 
         // Start the Respawn coroutine
         StartCoroutine(Respawn());
+    }
 
-        // Can add if score is 0, restart the level.
+    private IEnumerator StopEmissionAfterSeconds(ParticleSystem particleSystem, float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        var emission = particleSystem.emission;
+        emission.enabled = false;
     }
 
     private IEnumerator Respawn()
